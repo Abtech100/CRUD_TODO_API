@@ -5,7 +5,6 @@ const app = express();
 //body parser middleware
 app.use(express.json());
 
-
 let todos = [
   { id: 1, task: 'Learn Node.js', completed: false },
   { id: 2, task: 'Build CRUD API', completed: false },
@@ -23,11 +22,9 @@ app.get('/todos/active', (req, res) => {
 
 app.get('/todos/:id', (req, res) => {
   const todo = todos.find(t => t.id === parseInt(req.params.id));
-
   if (!todo) {
     return res.status(404).json({ error: 'Todo not found' });
   }
-
   res.json(todo);
 });
 
@@ -52,8 +49,6 @@ app.post('/todos', (req, res) => {
   res.status(201).json(newTodo);
  // Echo back
 });  
-
-
 
 // PATCH Update – Partial
 app.patch('/todos/:id', (req, res) => {
