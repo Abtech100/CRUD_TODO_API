@@ -1,7 +1,9 @@
-require ('dotenv').config(); // Load .env variables
-import express, { json } from 'express';
+require('dotenv').config(); // Load environment variables from .env file
+const express = require('express');
 const app = express();
-app.use(json()); // Parse JSON bodies
+
+//body parser middleware
+app.use(express.json());
 
 
 let todos = [
@@ -13,6 +15,11 @@ let todos = [
 app.get('/todos', (req, res) => {
   res.status(200).json(todos); // Send array as JSON
 });
+
+app.get('/todos/active', (req, res) => {
+  const active = todos.filter(t => !t.completed);
+  res.json(active);
+}); 
 
 app.get('/todos/:id', (req, res) => {
   const todo = todos.find(t => t.id === parseInt(req.params.id));
@@ -26,6 +33,10 @@ app.get('/todos/:id', (req, res) => {
 
 // POST New – Create
 app.post('/todos', (req, res) => {
+  const { task } = req.body;
+  if (!task) {
+    return res.status(400).json({ error: 'task field is required' });
+  }
   const newTodo = { id: todos.length + 1, ...req.body }; // Auto-ID
   todos.push(newTodo);
   res.status(201).json(newTodo); // Echo back
@@ -37,11 +48,12 @@ app.post('/todos', (req, res) => {
   if (!task) {
     return res.status(400).json({ error: 'task field is required' });
   }
+  todos.push(newTodo);
+  res.status(201).json(newTodo);
+ // Echo back
+});  
 
-  const todo = { id: nextId++, task, completed: false };
-  todos.push(todo);
-  res.status(201).json(todo);
-});
+
 
 // PATCH Update – Partial
 app.patch('/todos/:id', (req, res) => {
